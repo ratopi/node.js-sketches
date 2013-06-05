@@ -4,7 +4,7 @@ Some small sketches for node.js.
 
 Not very sufficicated.
 
-Mainly for testing things out.
+Mainly for testing things.
 
 Have fun.
 
