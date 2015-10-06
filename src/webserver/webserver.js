@@ -45,7 +45,7 @@ de.ratopi.sketches.webserver = function( request, response )
 		response.writeHead( 200, headers );
 		response.write( file, "binary" );
 		response.end();
-	};
+	}
 
 	// ---
 
@@ -66,7 +66,7 @@ de.ratopi.sketches.webserver = function( request, response )
 		}
 
 		fs.readFile( filename, "binary",  fileHandler );
-	};
+	}
 
 	// ---
 
