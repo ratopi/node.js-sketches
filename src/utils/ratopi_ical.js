@@ -1,5 +1,5 @@
 /*
-
+ Copyright (c) 2015 Ralf Th. Pietsch <ratopi@abwesend.de>
  */
 
 exports.convertICal =
