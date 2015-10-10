@@ -10,6 +10,7 @@
 var fs = require( "fs" );
 var http = require( "http" );
 var path = require( "path" );
+var process = require( "process" );
 var url = require( "url" );
 
 // ---
@@ -17,50 +18,54 @@ var url = require( "url" );
 var webserver =
 	function ( request, response )
 	{
-		function fileHandler( err, file )
-		{
-			if ( err )
+		var fileHandler =
+			function ( err, file )
 			{
-				response.writeHead( 500, { "Content-Type": "text/plain" } );
-				response.write( err + "\n" );
+				if ( err )
+				{
+					response.writeHead( 500, { "Content-Type": "text/plain" } );
+					response.write( err + "\n" );
+					response.end();
+					return;
+				}
+
+				var headers = {};
+
+				var contentType = contentTypesByExtension[ path.extname( filename ) ];
+
+				if ( contentType )
+				{
+					headers[ "Content-Type" ] = contentType;
+				}
+
+				response.writeHead( 200, headers );
+				response.write( file, "binary" );
 				response.end();
-				return;
-			}
-
-			var headers = {};
-
-			var contentType = contentTypesByExtension[ path.extname( filename ) ];
-
-			if ( contentType )
-			{
-				headers[ "Content-Type" ] = contentType;
-			}
-
-			response.writeHead( 200, headers );
-			response.write( file, "binary" );
-			response.end();
-		}
+			};
 
 		// ---
 
-		function pathHandler( exists )
-		{
-			if ( ! exists )
+		var pathHandler =
+			function ( exists )
 			{
-				response.writeHead( 404, { "Content-Type": "text/plain" } );
-				response.write( "404 Not Found\n" );
-				response.end();
+				if ( ! exists )
+				{
+					response.writeHead( 404, { "Content-Type": "text/plain" } );
+					response.write( "404 Not Found\n" );
+					response.end();
 
-				return;
-			}
+					return;
+				}
 
-			if ( fs.statSync( filename ).isDirectory() )
-			{
-				filename += '/index.html';
-			}
-
-			fs.readFile( filename, "binary", fileHandler );
-		}
+				if ( fs.statSync( filename ).isDirectory() )
+				{
+					fs.exists( filename += '/index.html', pathHandler );
+				}
+				else
+				{
+					fs.readFile( filename, "binary", fileHandler );
+				}
+			};
 
 		// ---
 
